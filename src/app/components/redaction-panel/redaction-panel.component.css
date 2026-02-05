@@ -91,6 +91,40 @@
   outline-offset: 2px;
 }
 
+.delete-button {
+  padding: 10px 20px;
+  background-color: #E53E3E;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.delete-button:hover:not(:disabled) {
+  background-color: #C53030;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.delete-button:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.delete-button:disabled {
+  background-color: #CBD5E0;
+  color: #A0AEC0;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.delete-button:focus-visible {
+  outline: 2px solid #4A90E2;
+  outline-offset: 2px;
+}
+
 .help-text {
   padding: 12px;
   background-color: #F7FAFC;

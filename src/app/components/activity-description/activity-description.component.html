@@ -51,6 +51,8 @@
                 tabindex="0"
                 role="mark"
                 [attr.aria-label]="'Redacted text with types: ' + getTooltipText(segment)"
+                (click)="onSegmentClick(segment)"
+                (focus)="onSegmentFocus(segment)"
               >{{ segment.text }}<span [id]="getTooltipId(i)" class="tooltip-content" role="tooltip">
                 <div class="tooltip-redaction-list">
                   <div *ngFor="let type of segment.redactionTypes" class="tooltip-redaction-item">
@@ -81,7 +83,9 @@
       <div class="right-content">
         <app-redaction-panel
           [hasSelection]="hasSelection"
+          [selectedRedactedRange]="selectedRedactedRange"
           (applyRedactions)="onApplyRedactionsInternal($event)"
+          (deleteRedactions)="onDeleteRedactions()"
         ></app-redaction-panel>
       </div>
     </div>

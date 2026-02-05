@@ -23,6 +23,7 @@ export class ActivityDescriptionComponent implements OnChanges {
   contextMenuX: number = 0;
   contextMenuY: number = 0;
   currentSelection: { text: string; startPosition: number; endPosition: number } | null = null;
+  selectedRedactedRange: { start: number; end: number; types: RedactionType[] } | null = null;
   redactionTypes: RedactionType[] = ['Private', 'Privileged', 'Highlight', 'Privacy-Foreign'];
 
   constructor(private redactionService: RedactionService) {}
@@ -151,12 +152,34 @@ export class ActivityDescriptionComponent implements OnChanges {
     event.stopPropagation();
     event.preventDefault();
 
-    this.redactionService.removeRedaction(
-      this.activity.id,
+    this.removeRedactionFromRange(
       segment.startPosition,
       segment.endPosition,
       redactionType
     );
+  }
+
+  private removeRedactionFromRange(startPosition: number, endPosition: number, redactionType: RedactionType): void {
+    this.redactionService.removeRedaction(
+      this.activity.id,
+      startPosition,
+      endPosition,
+      redactionType
+    );
+
+    if (this.selectedRedactedRange &&
+        this.selectedRedactedRange.start === startPosition &&
+        this.selectedRedactedRange.end === endPosition) {
+      const remainingTypes = this.selectedRedactedRange.types.filter(t => t !== redactionType);
+      if (remainingTypes.length === 0) {
+        this.selectedRedactedRange = null;
+      } else {
+        this.selectedRedactedRange = {
+          ...this.selectedRedactedRange,
+          types: remainingTypes
+        };
+      }
+    }
   }
 
   onRemoveRedactionKeyboard(segment: RenderedSegment, redactionType: RedactionType, event: KeyboardEvent): void {
@@ -164,8 +187,7 @@ export class ActivityDescriptionComponent implements OnChanges {
       event.stopPropagation();
       event.preventDefault();
 
-      this.redactionService.removeRedaction(
-        this.activity.id,
+      this.removeRedactionFromRange(
         segment.startPosition,
         segment.endPosition,
         redactionType
@@ -350,5 +372,41 @@ export class ActivityDescriptionComponent implements OnChanges {
         }, 0);
       }
     }
+  }
+
+  onSegmentClick(segment: RenderedSegment): void {
+    if (segment.isRedacted && segment.redactionTypes.length > 0) {
+      this.selectedRedactedRange = {
+        start: segment.startPosition,
+        end: segment.endPosition,
+        types: Array.from(new Set(segment.redactionTypes))
+      };
+    } else {
+      this.selectedRedactedRange = null;
+    }
+  }
+
+  onSegmentFocus(segment: RenderedSegment): void {
+    if (segment.isRedacted && segment.redactionTypes.length > 0) {
+      this.selectedRedactedRange = {
+        start: segment.startPosition,
+        end: segment.endPosition,
+        types: Array.from(new Set(segment.redactionTypes))
+      };
+    }
+  }
+
+  onDeleteRedactions(): void {
+    if (!this.selectedRedactedRange || this.selectedRedactedRange.types.length === 0) {
+      return;
+    }
+
+    const { start, end, types } = this.selectedRedactedRange;
+
+    types.forEach(redactionType => {
+      this.removeRedactionFromRange(start, end, redactionType);
+    });
+
+    this.selectedRedactedRange = null;
   }
 }

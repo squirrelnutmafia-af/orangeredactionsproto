@@ -13,7 +13,9 @@ import { RedactionService } from '../../services/redaction.service';
 })
 export class RedactionPanelComponent {
   @Input() hasSelection: boolean = false;
+  @Input() selectedRedactedRange: { start: number; end: number; types: RedactionType[] } | null = null;
   @Output() applyRedactions = new EventEmitter<RedactionType[]>();
+  @Output() deleteRedactions = new EventEmitter<void>();
 
   selectedTypes: { [key: string]: boolean } = {};
   redactionTypes: RedactionTypeConfig[] = [];
@@ -40,6 +42,18 @@ export class RedactionPanelComponent {
   isApplyDisabled(): boolean {
     const hasSelectedTypes = Object.values(this.selectedTypes).some(v => v === true);
     return !this.hasSelection || !hasSelectedTypes;
+  }
+
+  onDelete(): void {
+    if (!this.isDeleteDisabled()) {
+      this.deleteRedactions.emit();
+    }
+  }
+
+  isDeleteDisabled(): boolean {
+    return !this.selectedRedactedRange ||
+           !this.selectedRedactedRange.types ||
+           this.selectedRedactedRange.types.length === 0;
   }
 
   getCheckboxId(type: RedactionType): string {
