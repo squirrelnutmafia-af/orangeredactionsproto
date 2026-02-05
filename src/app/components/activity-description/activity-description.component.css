@@ -61,6 +61,12 @@
   font-size: 14px;
 }
 
+.activity-meta {
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid #e0e0e0;
+}
+
 .description-section {
   margin: 20px 0;
 }
@@ -128,10 +134,4 @@
   transform: translateX(-50%);
   border: 5px solid transparent;
   border-top-color: #333;
-}
-
-.activity-meta {
-  margin-top: 20px;
-  padding-top: 20px;
-  border-top: 1px solid #e0e0e0;
 }
