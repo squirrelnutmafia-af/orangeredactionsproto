@@ -17,8 +17,10 @@
           [attr.aria-label]="redactionType.label + ' - ' + redactionType.description"
           class="redaction-checkbox"
         />
+        <i *ngIf="redactionType.type === 'Private'" class="fa-solid fa-shield" style="color: #ff3333;"></i>
         <i *ngIf="redactionType.type === 'Privileged'" class="fa-solid fa-crown" style="color: #0091ff;"></i>
-        <i *ngIf="redactionType.type !== 'Privileged'" class="fa-solid fa-shield" style="color: #ff3333;"></i>
+        <i *ngIf="redactionType.type === 'Highlight'" class="fa-solid fa-highlighter" style="color: #ebb800;"></i>
+        <i *ngIf="redactionType.type === 'Privacy-Foreign'" class="fa-solid fa-globe" style="color: #02a23a;"></i>
         <span class="redaction-label-text">{{ redactionType.label }}</span>
       </label>
     </div>
