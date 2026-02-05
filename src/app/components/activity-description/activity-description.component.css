@@ -168,13 +168,19 @@
   transform: translateX(-50%);
   background-color: #333;
   color: white;
-  padding: 8px 12px;
+  padding: 8px;
   border-radius: 4px;
   font-size: 12px;
-  white-space: nowrap;
   z-index: 1000;
   transition: opacity 0.2s ease;
   pointer-events: none;
+  white-space: nowrap;
+  min-width: 150px;
+}
+
+.redacted-text:hover .tooltip-content,
+.redacted-text:focus .tooltip-content {
+  pointer-events: auto;
 }
 
 .tooltip-content::after {
@@ -185,4 +191,59 @@
   transform: translateX(-50%);
   border: 5px solid transparent;
   border-top-color: #333;
+}
+
+.tooltip-redaction-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.tooltip-redaction-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 4px 6px;
+  border-radius: 2px;
+  transition: background-color 0.15s ease;
+}
+
+.tooltip-redaction-item:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.redaction-type-label {
+  font-weight: 500;
+  flex: 1;
+}
+
+.remove-redaction-btn {
+  background: none;
+  border: none;
+  color: #ff6b6b;
+  font-size: 18px;
+  font-weight: bold;
+  cursor: pointer;
+  padding: 0 4px;
+  line-height: 1;
+  transition: all 0.15s ease;
+  border-radius: 2px;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.remove-redaction-btn:hover,
+.remove-redaction-btn:focus {
+  background-color: rgba(255, 107, 107, 0.2);
+  color: #ff4444;
+  outline: 2px solid #ff6b6b;
+  outline-offset: 1px;
+}
+
+.remove-redaction-btn:active {
+  transform: scale(0.95);
 }

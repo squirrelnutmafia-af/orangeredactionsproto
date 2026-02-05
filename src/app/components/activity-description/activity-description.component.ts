@@ -141,4 +141,30 @@ export class ActivityDescriptionComponent implements OnChanges {
   onApplyRedactionsInternal(types: RedactionType[]): void {
     this.applyRedactions.emit(types);
   }
+
+  onRemoveRedaction(segment: RenderedSegment, redactionType: RedactionType, event: Event): void {
+    event.stopPropagation();
+    event.preventDefault();
+
+    this.redactionService.removeRedaction(
+      this.activity.id,
+      segment.startPosition,
+      segment.endPosition,
+      redactionType
+    );
+  }
+
+  onRemoveRedactionKeyboard(segment: RenderedSegment, redactionType: RedactionType, event: KeyboardEvent): void {
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.stopPropagation();
+      event.preventDefault();
+
+      this.redactionService.removeRedaction(
+        this.activity.id,
+        segment.startPosition,
+        segment.endPosition,
+        redactionType
+      );
+    }
+  }
 }

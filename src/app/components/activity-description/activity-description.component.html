@@ -45,12 +45,25 @@
                 [id]="getSegmentId(i)"
                 [ngStyle]="getSegmentStyle(segment)"
                 [attr.aria-describedby]="getTooltipId(i)"
-                [attr.data-tooltip]="getTooltipText(segment)"
                 class="redacted-text"
                 tabindex="0"
                 role="mark"
-                [attr.aria-label]="'Redacted text: ' + getTooltipText(segment)"
-              >{{ segment.text }}<span [id]="getTooltipId(i)" class="tooltip-content" role="tooltip">{{ getTooltipText(segment) }}</span></mark>
+                [attr.aria-label]="'Redacted text with types: ' + getTooltipText(segment)"
+              >{{ segment.text }}<span [id]="getTooltipId(i)" class="tooltip-content" role="tooltip">
+                <div class="tooltip-redaction-list">
+                  <div *ngFor="let type of segment.redactionTypes" class="tooltip-redaction-item">
+                    <span class="redaction-type-label">{{ type }}</span>
+                    <button
+                      type="button"
+                      class="remove-redaction-btn"
+                      (click)="onRemoveRedaction(segment, type, $event)"
+                      (keydown)="onRemoveRedactionKeyboard(segment, type, $event)"
+                      [attr.aria-label]="'Remove ' + type + ' redaction'"
+                      tabindex="0"
+                    >×</button>
+                  </div>
+                </div>
+              </span></mark>
             </ng-container>
           </div>
         </div>

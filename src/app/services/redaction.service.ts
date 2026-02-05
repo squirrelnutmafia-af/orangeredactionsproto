@@ -165,4 +165,25 @@ export class RedactionService {
   ): string {
     return '';
   }
+
+  removeRedaction(
+    activityId: string,
+    startPosition: number,
+    endPosition: number,
+    redactionType: RedactionType
+  ): void {
+    const currentRedactions = this.getRedactions();
+    const redactionToRemove = currentRedactions.find(
+      r => r.activityId === activityId &&
+           r.redactionType === redactionType &&
+           r.startPosition <= startPosition &&
+           r.endPosition >= endPosition
+    );
+
+    if (redactionToRemove) {
+      const index = currentRedactions.indexOf(redactionToRemove);
+      currentRedactions.splice(index, 1);
+      this.redactionsSubject.next([...currentRedactions]);
+    }
+  }
 }
