@@ -17,7 +17,8 @@
           [attr.aria-label]="redactionType.label + ' - ' + redactionType.description"
           class="redaction-checkbox"
         />
-        <i class="fa-solid fa-shield" style="color: #ff3333;"></i>
+        <i *ngIf="redactionType.type === 'Privileged'" class="fa-solid fa-crown" style="color: #0091ff;"></i>
+        <i *ngIf="redactionType.type !== 'Privileged'" class="fa-solid fa-shield" style="color: #ff3333;"></i>
         <span class="redaction-label-text">{{ redactionType.label }}</span>
       </label>
     </div>
