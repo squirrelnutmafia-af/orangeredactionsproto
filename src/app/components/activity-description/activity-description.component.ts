@@ -211,7 +211,12 @@ export class ActivityDescriptionComponent implements OnChanges {
       setTimeout(() => {
         const menuElement = document.querySelector('.context-menu') as HTMLElement;
         if (menuElement) {
-          menuElement.focus();
+          const firstButton = menuElement.querySelector('button:not([disabled])') as HTMLElement;
+          if (firstButton) {
+            firstButton.focus();
+          } else {
+            menuElement.focus();
+          }
         }
       }, 0);
     }
@@ -253,6 +258,34 @@ export class ActivityDescriptionComponent implements OnChanges {
     if (event.key === 'Escape') {
       event.preventDefault();
       this.hideContextMenu();
+      return;
+    }
+
+    if (event.key === 'Tab') {
+      const menuElement = document.querySelector('.context-menu') as HTMLElement;
+      if (!menuElement) return;
+
+      const focusableElements = menuElement.querySelectorAll(
+        'button:not([disabled])'
+      ) as NodeListOf<HTMLElement>;
+
+      if (focusableElements.length === 0) return;
+
+      const firstElement = focusableElements[0];
+      const lastElement = focusableElements[focusableElements.length - 1];
+      const activeElement = document.activeElement as HTMLElement;
+
+      if (event.shiftKey) {
+        if (activeElement === firstElement || !menuElement.contains(activeElement)) {
+          event.preventDefault();
+          lastElement.focus();
+        }
+      } else {
+        if (activeElement === lastElement || !menuElement.contains(activeElement)) {
+          event.preventDefault();
+          firstElement.focus();
+        }
+      }
     }
   }
 
@@ -307,7 +340,12 @@ export class ActivityDescriptionComponent implements OnChanges {
         setTimeout(() => {
           const menuElement = document.querySelector('.context-menu') as HTMLElement;
           if (menuElement) {
-            menuElement.focus();
+            const firstButton = menuElement.querySelector('button:not([disabled])') as HTMLElement;
+            if (firstButton) {
+              firstButton.focus();
+            } else {
+              menuElement.focus();
+            }
           }
         }, 0);
       }
