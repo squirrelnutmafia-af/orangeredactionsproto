@@ -247,3 +247,95 @@
 .remove-redaction-btn:active {
   transform: scale(0.95);
 }
+
+.context-menu-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 9999;
+  background: transparent;
+}
+
+.context-menu {
+  position: fixed;
+  background-color: #333;
+  color: white;
+  border-radius: 6px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  min-width: 200px;
+  padding: 8px 0;
+  z-index: 10000;
+  outline: none;
+}
+
+.context-menu-header {
+  padding: 8px 12px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.6);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  margin-bottom: 4px;
+  letter-spacing: 0.5px;
+}
+
+.context-menu-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 12px;
+  transition: background-color 0.15s ease;
+  cursor: pointer;
+}
+
+.context-menu-item:hover:not(.disabled) {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.context-menu-item.disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.redaction-type-name {
+  font-size: 13px;
+  font-weight: 500;
+  flex: 1;
+}
+
+.add-redaction-btn {
+  background: none;
+  border: none;
+  color: #4CAF50;
+  font-size: 20px;
+  font-weight: bold;
+  cursor: pointer;
+  padding: 0 4px;
+  line-height: 1;
+  transition: all 0.15s ease;
+  border-radius: 2px;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.add-redaction-btn:not(:disabled):hover,
+.add-redaction-btn:not(:disabled):focus {
+  background-color: rgba(76, 175, 80, 0.2);
+  color: #66BB6A;
+  outline: 2px solid #4CAF50;
+  outline-offset: 1px;
+}
+
+.add-redaction-btn:not(:disabled):active {
+  transform: scale(0.95);
+}
+
+.add-redaction-btn:disabled {
+  color: rgba(76, 175, 80, 0.3);
+  cursor: not-allowed;
+}

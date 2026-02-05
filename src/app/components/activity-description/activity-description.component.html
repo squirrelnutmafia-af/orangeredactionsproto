@@ -32,6 +32,8 @@
             class="description-text"
             (mouseup)="onTextSelection()"
             (keyup)="onTextSelection()"
+            (contextmenu)="onContextMenu($event)"
+            (keydown)="onDescriptionKeydown($event)"
             role="article"
             aria-label="Activity description - selectable text for redaction"
           >
@@ -82,6 +84,43 @@
           (applyRedactions)="onApplyRedactionsInternal($event)"
         ></app-redaction-panel>
       </div>
+    </div>
+  </div>
+</div>
+
+<div
+  *ngIf="showContextMenu"
+  class="context-menu-overlay"
+  (click)="hideContextMenu()"
+>
+  <div
+    class="context-menu"
+    [style.left.px]="contextMenuX"
+    [style.top.px]="contextMenuY"
+    (click)="$event.stopPropagation()"
+    (keydown)="onContextMenuKeydown($event)"
+    role="menu"
+    aria-label="Redaction context menu"
+    tabindex="-1"
+  >
+    <div class="context-menu-header">Add Redaction</div>
+    <div
+      *ngFor="let type of redactionTypes"
+      class="context-menu-item"
+      [class.disabled]="isRedactionDisabled(type)"
+      role="menuitem"
+      [attr.aria-disabled]="isRedactionDisabled(type)"
+    >
+      <span class="redaction-type-name">{{ type }}</span>
+      <button
+        type="button"
+        class="add-redaction-btn"
+        (click)="onAddRedactionFromContext(type, $event)"
+        (keydown)="onAddRedactionKeyboard(type, $event)"
+        [attr.aria-label]="'Add ' + type + ' redaction'"
+        [disabled]="isRedactionDisabled(type)"
+        tabindex="0"
+      >+</button>
     </div>
   </div>
 </div>

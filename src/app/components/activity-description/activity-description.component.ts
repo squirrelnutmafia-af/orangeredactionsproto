@@ -19,6 +19,11 @@ export class ActivityDescriptionComponent implements OnChanges {
 
   segments: RenderedSegment[] = [];
   isExpanded: boolean = true;
+  showContextMenu: boolean = false;
+  contextMenuX: number = 0;
+  contextMenuY: number = 0;
+  currentSelection: { text: string; startPosition: number; endPosition: number } | null = null;
+  redactionTypes: RedactionType[] = ['Private', 'Privileged', 'Highlight', 'Privacy-Foreign'];
 
   constructor(private redactionService: RedactionService) {}
 
@@ -165,6 +170,147 @@ export class ActivityDescriptionComponent implements OnChanges {
         segment.endPosition,
         redactionType
       );
+    }
+  }
+
+  onContextMenu(event: MouseEvent): void {
+    const selection = window.getSelection();
+    if (!selection || selection.rangeCount === 0) {
+      return;
+    }
+
+    const selectedText = selection.toString().trim();
+    if (selectedText.length === 0) {
+      return;
+    }
+
+    const range = selection.getRangeAt(0);
+    const descriptionElement = document.getElementById('activity-description');
+
+    if (!descriptionElement || !descriptionElement.contains(range.commonAncestorContainer)) {
+      return;
+    }
+
+    event.preventDefault();
+    event.stopPropagation();
+
+    const startPosition = this.getAbsolutePosition(range.startContainer, range.startOffset);
+    const endPosition = this.getAbsolutePosition(range.endContainer, range.endOffset);
+
+    if (startPosition !== -1 && endPosition !== -1) {
+      this.currentSelection = {
+        text: selectedText,
+        startPosition,
+        endPosition
+      };
+
+      this.contextMenuX = event.clientX;
+      this.contextMenuY = event.clientY;
+      this.showContextMenu = true;
+
+      setTimeout(() => {
+        const menuElement = document.querySelector('.context-menu') as HTMLElement;
+        if (menuElement) {
+          menuElement.focus();
+        }
+      }, 0);
+    }
+  }
+
+  hideContextMenu(): void {
+    this.showContextMenu = false;
+    this.currentSelection = null;
+  }
+
+  onAddRedactionFromContext(redactionType: RedactionType, event: Event): void {
+    event.stopPropagation();
+    event.preventDefault();
+
+    if (!this.currentSelection) {
+      return;
+    }
+
+    this.applyRedactions.emit([redactionType]);
+  }
+
+  isRedactionDisabled(redactionType: RedactionType): boolean {
+    if (!this.currentSelection) {
+      return true;
+    }
+
+    const existingRedactions = this.redactionService.getRedactions();
+    const hasFullCoverage = existingRedactions.some(
+      r => r.activityId === this.activity.id &&
+           r.redactionType === redactionType &&
+           r.startPosition <= this.currentSelection!.startPosition &&
+           r.endPosition >= this.currentSelection!.endPosition
+    );
+
+    return hasFullCoverage;
+  }
+
+  onContextMenuKeydown(event: KeyboardEvent): void {
+    if (event.key === 'Escape') {
+      event.preventDefault();
+      this.hideContextMenu();
+    }
+  }
+
+  onAddRedactionKeyboard(redactionType: RedactionType, event: KeyboardEvent): void {
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      event.stopPropagation();
+
+      if (!this.isRedactionDisabled(redactionType)) {
+        this.applyRedactions.emit([redactionType]);
+      }
+    }
+  }
+
+  onDescriptionKeydown(event: KeyboardEvent): void {
+    if ((event.shiftKey && event.key === 'F10') || event.key === 'ContextMenu') {
+      const selection = window.getSelection();
+      if (!selection || selection.rangeCount === 0) {
+        return;
+      }
+
+      const selectedText = selection.toString().trim();
+      if (selectedText.length === 0) {
+        return;
+      }
+
+      event.preventDefault();
+      event.stopPropagation();
+
+      const range = selection.getRangeAt(0);
+      const descriptionElement = document.getElementById('activity-description');
+
+      if (!descriptionElement || !descriptionElement.contains(range.commonAncestorContainer)) {
+        return;
+      }
+
+      const startPosition = this.getAbsolutePosition(range.startContainer, range.startOffset);
+      const endPosition = this.getAbsolutePosition(range.endContainer, range.endOffset);
+
+      if (startPosition !== -1 && endPosition !== -1) {
+        this.currentSelection = {
+          text: selectedText,
+          startPosition,
+          endPosition
+        };
+
+        const rect = range.getBoundingClientRect();
+        this.contextMenuX = rect.left + (rect.width / 2);
+        this.contextMenuY = rect.top - 10;
+        this.showContextMenu = true;
+
+        setTimeout(() => {
+          const menuElement = document.querySelector('.context-menu') as HTMLElement;
+          if (menuElement) {
+            menuElement.focus();
+          }
+        }, 0);
+      }
     }
   }
 }
