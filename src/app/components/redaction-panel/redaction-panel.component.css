@@ -1,0 +1,106 @@
+.redaction-panel {
+  background: white;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 24px;
+  min-width: 280px;
+}
+
+.redaction-panel h3 {
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
+  margin: 0 0 20px 0;
+}
+
+.redaction-types {
+  margin-bottom: 20px;
+}
+
+.redaction-type-item {
+  margin-bottom: 16px;
+}
+
+.redaction-label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.redaction-checkbox {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+  accent-color: #4A90E2;
+}
+
+.color-indicator {
+  width: 20px;
+  height: 20px;
+  border-radius: 3px;
+  display: inline-block;
+  flex-shrink: 0;
+}
+
+.redaction-label-text {
+  font-size: 14px;
+  color: #333;
+  font-weight: 500;
+}
+
+.action-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.apply-button {
+  padding: 10px 20px;
+  background-color: #4A5568;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.apply-button:hover:not(:disabled) {
+  background-color: #2D3748;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.apply-button:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.apply-button:disabled {
+  background-color: #CBD5E0;
+  color: #A0AEC0;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.apply-button:focus-visible {
+  outline: 2px solid #4A90E2;
+  outline-offset: 2px;
+}
+
+.help-text {
+  padding: 12px;
+  background-color: #F7FAFC;
+  border-radius: 4px;
+  border-left: 3px solid #4A90E2;
+}
+
+.help-text p {
+  margin: 0;
+  font-size: 13px;
+  color: #4A5568;
+  line-height: 1.5;
+}

@@ -1,0 +1,23 @@
+<div class="app-container">
+  <header class="app-header">
+    <h1>Redaction Tool</h1>
+  </header>
+
+  <main class="main-content">
+    <div class="content-layout">
+      <div class="left-section">
+        <app-activity-description
+          [activity]="activity"
+          (textSelected)="onTextSelected($event)"
+        ></app-activity-description>
+      </div>
+
+      <div class="right-section">
+        <app-redaction-panel
+          [hasSelection]="hasSelection()"
+          (applyRedactions)="onApplyRedactions($event)"
+        ></app-redaction-panel>
+      </div>
+    </div>
+  </main>
+</div>

@@ -1,0 +1,58 @@
+<div class="activity-panel">
+  <div class="activity-header">
+    <h2>Activity UID: {{ activity.uid }}</h2>
+  </div>
+
+  <div class="activity-details">
+    <div class="detail-row">
+      <span class="detail-label">Priority:</span>
+      <span class="priority-badge" [class]="'priority-' + activity.priority.toLowerCase()">
+        {{ activity.priority }}
+      </span>
+    </div>
+
+    <div class="detail-row">
+      <span class="detail-label">Workflow Tags:</span>
+      <span *ngFor="let tag of activity.workflowTags" class="workflow-tag">
+        {{ tag }}
+      </span>
+    </div>
+  </div>
+
+  <div class="description-section">
+    <h3>Activity Text:</h3>
+    <div
+      id="activity-description"
+      class="description-text"
+      (mouseup)="onTextSelection()"
+      (keyup)="onTextSelection()"
+      role="article"
+      aria-label="Activity description - selectable text for redaction"
+    >
+      <ng-container *ngFor="let segment of segments; let i = index">
+        <span
+          *ngIf="!segment.isRedacted"
+          [id]="getSegmentId(i)"
+        >{{ segment.text }}</span>
+        <mark
+          *ngIf="segment.isRedacted"
+          [id]="getSegmentId(i)"
+          [ngStyle]="getSegmentStyle(segment)"
+          [attr.aria-describedby]="getTooltipId(i)"
+          [attr.data-tooltip]="getTooltipText(segment)"
+          class="redacted-text"
+          tabindex="0"
+          role="mark"
+          [attr.aria-label]="'Redacted text: ' + getTooltipText(segment)"
+        >{{ segment.text }}<span [id]="getTooltipId(i)" class="tooltip-content" role="tooltip">{{ getTooltipText(segment) }}</span></mark>
+      </ng-container>
+    </div>
+  </div>
+
+  <div class="activity-meta">
+    <div class="detail-row">
+      <span class="detail-label">Created Time:</span>
+      <span>{{ activity.createdTime }}</span>
+    </div>
+  </div>
+</div>

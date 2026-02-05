@@ -1,0 +1,41 @@
+<div class="redaction-panel">
+  <h3>Redaction Panel:</h3>
+
+  <div class="redaction-types">
+    <div
+      *ngFor="let redactionType of redactionTypes"
+      class="redaction-type-item"
+    >
+      <label
+        [for]="getCheckboxId(redactionType.type)"
+        class="redaction-label"
+      >
+        <input
+          type="checkbox"
+          [id]="getCheckboxId(redactionType.type)"
+          [(ngModel)]="selectedTypes[redactionType.type]"
+          [attr.aria-label]="redactionType.label + ' - ' + redactionType.description"
+          class="redaction-checkbox"
+        />
+        <span class="color-indicator" [ngStyle]="getColorIndicatorStyle(redactionType)"></span>
+        <span class="redaction-label-text">{{ redactionType.label }}</span>
+      </label>
+    </div>
+  </div>
+
+  <div class="action-buttons">
+    <button
+      class="apply-button"
+      (click)="onApply()"
+      [disabled]="isApplyDisabled()"
+      [attr.aria-disabled]="isApplyDisabled()"
+      aria-label="Apply selected redaction types to selected text"
+    >
+      Apply
+    </button>
+  </div>
+
+  <div class="help-text" *ngIf="!hasSelection">
+    <p>Select text in the description to apply redactions.</p>
+  </div>
+</div>

@@ -1,0 +1,50 @@
+.app-container {
+  min-height: 100vh;
+  background-color: #F5F7FA;
+}
+
+.app-header {
+  background-color: white;
+  border-bottom: 1px solid #e0e0e0;
+  padding: 20px 40px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.app-header h1 {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 600;
+  color: #2D3748;
+}
+
+.main-content {
+  padding: 40px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.content-layout {
+  display: grid;
+  grid-template-columns: 1fr 350px;
+  gap: 24px;
+  align-items: start;
+}
+
+.left-section {
+  min-width: 0;
+}
+
+.right-section {
+  position: sticky;
+  top: 40px;
+}
+
+@media (max-width: 1024px) {
+  .content-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .right-section {
+    position: static;
+  }
+}
