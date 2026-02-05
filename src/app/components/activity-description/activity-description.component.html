@@ -1,21 +1,37 @@
 <div class="activity-panel">
-  <div class="activity-header">
+  <div class="activity-header collapsible" (click)="toggleExpanded()">
     <h2>Activity UID: {{ activity.uid }}</h2>
+    <span class="caret-icon" [class.expanded]="isExpanded">
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M5 7.5L10 12.5L15 7.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </span>
   </div>
 
-  <div class="activity-details">
-    <div class="detail-row">
-      <span class="detail-label">Priority:</span>
-      <span class="priority-badge" [class]="'priority-' + activity.priority.toLowerCase()">
-        {{ activity.priority }}
-      </span>
-    </div>
+  <div class="expandable-content" *ngIf="isExpanded">
+    <div class="content-split">
+      <div class="left-content">
+        <div class="detail-row">
+          <span class="detail-label">Priority:</span>
+          <span class="priority-badge" [class]="'priority-' + activity.priority.toLowerCase()">
+            {{ activity.priority }}
+          </span>
+        </div>
 
-    <div class="detail-row">
-      <span class="detail-label">Workflow Tags:</span>
-      <span *ngFor="let tag of activity.workflowTags" class="workflow-tag">
-        {{ tag }}
-      </span>
+        <div class="detail-row">
+          <span class="detail-label">Workflow Tags:</span>
+          <span *ngFor="let tag of activity.workflowTags" class="workflow-tag">
+            {{ tag }}
+          </span>
+        </div>
+      </div>
+
+      <div class="right-content">
+        <app-redaction-panel
+          [hasSelection]="hasSelection"
+          (applyRedactions)="onApplyRedactionsInternal($event)"
+        ></app-redaction-panel>
+      </div>
     </div>
   </div>
 

@@ -1,14 +1,13 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivityDescriptionComponent } from './components/activity-description/activity-description.component';
-import { RedactionPanelComponent } from './components/redaction-panel/redaction-panel.component';
 import { Activity, RedactionType } from './models/redaction.model';
 import { RedactionService } from './services/redaction.service';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [CommonModule, ActivityDescriptionComponent, RedactionPanelComponent],
+  imports: [CommonModule, ActivityDescriptionComponent],
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })

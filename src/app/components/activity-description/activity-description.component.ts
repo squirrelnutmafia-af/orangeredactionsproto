@@ -2,19 +2,23 @@ import { Component, Input, Output, EventEmitter, OnChanges, SimpleChanges } from
 import { CommonModule } from '@angular/common';
 import { Activity, RenderedSegment, RedactionType } from '../../models/redaction.model';
 import { RedactionService } from '../../services/redaction.service';
+import { RedactionPanelComponent } from '../redaction-panel/redaction-panel.component';
 
 @Component({
   selector: 'app-activity-description',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, RedactionPanelComponent],
   templateUrl: './activity-description.component.html',
   styleUrls: ['./activity-description.component.css']
 })
 export class ActivityDescriptionComponent implements OnChanges {
   @Input() activity!: Activity;
+  @Input() hasSelection: boolean = false;
   @Output() textSelected = new EventEmitter<{ text: string; startPosition: number; endPosition: number }>();
+  @Output() applyRedactions = new EventEmitter<RedactionType[]>();
 
   segments: RenderedSegment[] = [];
+  isExpanded: boolean = true;
 
   constructor(private redactionService: RedactionService) {}
 
@@ -128,5 +132,13 @@ export class ActivityDescriptionComponent implements OnChanges {
 
   getTooltipId(index: number): string {
     return `tooltip-${index}`;
+  }
+
+  toggleExpanded(): void {
+    this.isExpanded = !this.isExpanded;
+  }
+
+  onApplyRedactionsInternal(types: RedactionType[]): void {
+    this.applyRedactions.emit(types);
   }
 }

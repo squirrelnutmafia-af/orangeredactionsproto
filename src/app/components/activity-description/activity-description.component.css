@@ -6,11 +6,66 @@
   margin-bottom: 20px;
 }
 
+.activity-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0;
+}
+
+.activity-header.collapsible {
+  cursor: pointer;
+  user-select: none;
+  padding: 12px;
+  margin: -12px -12px 0 -12px;
+  border-radius: 4px;
+  transition: background-color 0.2s ease;
+}
+
+.activity-header.collapsible:hover {
+  background-color: #f5f5f5;
+}
+
 .activity-header h2 {
   font-size: 16px;
   font-weight: 600;
   color: #333;
-  margin: 0 0 20px 0;
+  margin: 0;
+}
+
+.caret-icon {
+  display: flex;
+  align-items: center;
+  transition: transform 0.2s ease;
+  color: #666;
+}
+
+.caret-icon.expanded {
+  transform: rotate(0deg);
+}
+
+.caret-icon:not(.expanded) {
+  transform: rotate(-90deg);
+}
+
+.expandable-content {
+  margin-top: 20px;
+}
+
+.content-split {
+  display: flex;
+  gap: 24px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.left-content {
+  flex: 1;
+}
+
+.right-content {
+  flex: 0 0 auto;
+  min-width: 300px;
 }
 
 .activity-details {

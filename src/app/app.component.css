@@ -19,32 +19,6 @@
 
 .main-content {
   padding: 40px;
-  max-width: 1400px;
+  max-width: 1200px;
   margin: 0 auto;
-}
-
-.content-layout {
-  display: grid;
-  grid-template-columns: 1fr 350px;
-  gap: 24px;
-  align-items: start;
-}
-
-.left-section {
-  min-width: 0;
-}
-
-.right-section {
-  position: sticky;
-  top: 40px;
-}
-
-@media (max-width: 1024px) {
-  .content-layout {
-    grid-template-columns: 1fr;
-  }
-
-  .right-section {
-    position: static;
-  }
 }
