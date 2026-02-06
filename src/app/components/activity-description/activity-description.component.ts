@@ -24,6 +24,9 @@ export class ActivityDescriptionComponent implements OnChanges {
   contextMenuY: number = 0;
   currentSelection: { text: string; startPosition: number; endPosition: number } | null = null;
   selectedRedactedRange: { start: number; end: number; types: RedactionType[] } | null = null;
+  selectedText: string = '';
+  wordInstances: { start: number; end: number }[] = [];
+  currentInstanceIndex: number = -1;
   redactionTypes: RedactionType[] = ['Private', 'Privileged', 'Highlight', 'Privacy-Foreign'];
 
   constructor(private redactionService: RedactionService) {}
@@ -52,11 +55,17 @@ export class ActivityDescriptionComponent implements OnChanges {
   onTextSelection(): void {
     const selection = window.getSelection();
     if (!selection || selection.rangeCount === 0) {
+      this.selectedText = '';
+      this.wordInstances = [];
+      this.currentInstanceIndex = -1;
       return;
     }
 
     const selectedText = selection.toString().trim();
     if (selectedText.length === 0) {
+      this.selectedText = '';
+      this.wordInstances = [];
+      this.currentInstanceIndex = -1;
       return;
     }
 
@@ -71,11 +80,14 @@ export class ActivityDescriptionComponent implements OnChanges {
     const endPosition = this.getAbsolutePosition(range.endContainer, range.endOffset);
 
     if (startPosition !== -1 && endPosition !== -1) {
+      this.selectedText = selectedText;
       this.textSelected.emit({
         text: selectedText,
         startPosition,
         endPosition
       });
+
+      this.findAllInstancesOfWord(selectedText, startPosition);
     }
   }
 
@@ -408,5 +420,173 @@ export class ActivityDescriptionComponent implements OnChanges {
     });
 
     this.selectedRedactedRange = null;
+  }
+
+  findAllInstancesOfWord(word: string, currentStartPosition: number): void {
+    const words = word.trim().split(/\s+/);
+    if (words.length !== 1) {
+      this.wordInstances = [];
+      this.currentInstanceIndex = -1;
+      return;
+    }
+
+    const description = this.activity.description;
+    const instances: { start: number; end: number }[] = [];
+    const searchWord = words[0];
+    let index = 0;
+
+    while (index < description.length) {
+      const foundIndex = description.indexOf(searchWord, index);
+      if (foundIndex === -1) {
+        break;
+      }
+
+      const isWordBoundary =
+        (foundIndex === 0 || !/\w/.test(description[foundIndex - 1])) &&
+        (foundIndex + searchWord.length === description.length ||
+         !/\w/.test(description[foundIndex + searchWord.length]));
+
+      if (isWordBoundary) {
+        instances.push({
+          start: foundIndex,
+          end: foundIndex + searchWord.length
+        });
+
+        if (foundIndex === currentStartPosition) {
+          this.currentInstanceIndex = instances.length - 1;
+        }
+      }
+
+      index = foundIndex + 1;
+    }
+
+    this.wordInstances = instances;
+  }
+
+  onNavigateToNext(): void {
+    if (this.wordInstances.length === 0) {
+      return;
+    }
+
+    this.currentInstanceIndex = (this.currentInstanceIndex + 1) % this.wordInstances.length;
+    const nextInstance = this.wordInstances[this.currentInstanceIndex];
+
+    this.selectTextRange(nextInstance.start, nextInstance.end);
+  }
+
+  private selectTextRange(start: number, end: number): void {
+    const descriptionElement = document.getElementById('activity-description');
+    if (!descriptionElement) {
+      return;
+    }
+
+    const range = document.createRange();
+    const selection = window.getSelection();
+
+    let currentPos = 0;
+    let startNode: Node | null = null;
+    let startOffset = 0;
+    let endNode: Node | null = null;
+    let endOffset = 0;
+
+    const walker = document.createTreeWalker(
+      descriptionElement,
+      NodeFilter.SHOW_TEXT,
+      null
+    );
+
+    let node: Node | null;
+    while ((node = walker.nextNode())) {
+      const nodeLength = node.textContent?.length || 0;
+
+      if (startNode === null && currentPos + nodeLength > start) {
+        startNode = node;
+        startOffset = start - currentPos;
+      }
+
+      if (endNode === null && currentPos + nodeLength >= end) {
+        endNode = node;
+        endOffset = end - currentPos;
+        break;
+      }
+
+      currentPos += nodeLength;
+    }
+
+    if (startNode && endNode && selection) {
+      range.setStart(startNode, startOffset);
+      range.setEnd(endNode, endOffset);
+      selection.removeAllRanges();
+      selection.addRange(range);
+
+      const selectedWord = this.activity.description.substring(start, end);
+      this.selectedText = selectedWord;
+      this.textSelected.emit({
+        text: selectedWord,
+        startPosition: start,
+        endPosition: end
+      });
+
+      const rangeRect = range.getBoundingClientRect();
+      const elementRect = descriptionElement.getBoundingClientRect();
+
+      if (rangeRect.top < elementRect.top || rangeRect.bottom > elementRect.bottom) {
+        const scrollParent = descriptionElement.parentElement;
+        if (scrollParent) {
+          scrollParent.scrollTop = rangeRect.top - elementRect.top + scrollParent.scrollTop - 100;
+        }
+      }
+    }
+  }
+
+  onApplyToAllInstances(types: RedactionType[]): void {
+    if (!this.currentSelection || this.wordInstances.length === 0) {
+      return;
+    }
+
+    let appliedCount = 0;
+
+    this.wordInstances.forEach(instance => {
+      const instanceText = this.activity.description.substring(instance.start, instance.end);
+      const existingRedactions = this.redactionService.getRedactions();
+
+      const typesToApply = types.filter(redactionType => {
+        return !existingRedactions.some(
+          r => r.activityId === this.activity.id &&
+               r.redactionType === redactionType &&
+               r.startPosition === instance.start &&
+               r.endPosition === instance.end
+        );
+      });
+
+      if (typesToApply.length > 0) {
+        this.redactionService.applyRedactions(
+          this.activity.id,
+          instanceText,
+          instance.start,
+          instance.end,
+          typesToApply
+        );
+        appliedCount += typesToApply.length;
+      }
+    });
+
+    if (appliedCount > 0) {
+      const instanceCount = this.wordInstances.length;
+      this.announceToScreenReader(`${instanceCount} instance${instanceCount !== 1 ? 's' : ''} redacted`);
+    }
+  }
+
+  private announceToScreenReader(message: string): void {
+    const announcement = document.createElement('div');
+    announcement.setAttribute('role', 'status');
+    announcement.setAttribute('aria-live', 'polite');
+    announcement.className = 'sr-only';
+    announcement.textContent = message;
+    document.body.appendChild(announcement);
+
+    setTimeout(() => {
+      document.body.removeChild(announcement);
+    }, 1000);
   }
 }

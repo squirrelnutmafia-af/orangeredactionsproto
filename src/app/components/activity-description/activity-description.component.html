@@ -84,8 +84,11 @@
         <app-redaction-panel
           [hasSelection]="hasSelection"
           [selectedRedactedRange]="selectedRedactedRange"
+          [selectedText]="selectedText"
           (applyRedactions)="onApplyRedactionsInternal($event)"
+          (applyToAllInstances)="onApplyToAllInstances($event)"
           (deleteRedactions)="onDeleteRedactions()"
+          (navigateToNext)="onNavigateToNext()"
         ></app-redaction-panel>
       </div>
     </div>

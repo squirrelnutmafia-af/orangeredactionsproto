@@ -27,15 +27,79 @@
   </div>
 
   <div class="action-buttons">
-    <button
-      class="apply-button"
-      (click)="onApply()"
-      [disabled]="isApplyDisabled()"
-      [attr.aria-disabled]="isApplyDisabled()"
-      aria-label="Apply selected redaction types to selected text"
+    <div class="combo-button-group">
+      <button
+        class="apply-button"
+        (click)="onApply()"
+        [disabled]="isApplyDisabled()"
+        [attr.aria-disabled]="isApplyDisabled()"
+        aria-label="Apply selected redaction types to selected text"
+      >
+        Apply
+      </button>
+      <button
+        class="apply-dropdown-trigger"
+        (click)="toggleApplyDropdown()"
+        [disabled]="isApplyDisabled()"
+        [attr.aria-disabled]="isApplyDisabled()"
+        [attr.aria-haspopup]="true"
+        [attr.aria-expanded]="showApplyDropdown"
+        aria-label="Apply scope options"
+      >
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M3 4.5L6 7.5L9 4.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+    </div>
+
+    <div
+      *ngIf="showApplyDropdown"
+      class="apply-dropdown-menu"
+      role="menu"
+      aria-label="Apply scope menu"
+      (keydown)="onDropdownKeydown($event)"
+      tabindex="-1"
     >
-      Apply
+      <button
+        class="dropdown-item"
+        (click)="onApplyToSelected()"
+        role="menuitem"
+        aria-label="Apply to selected instance"
+        tabindex="0"
+      >
+        Apply to selected instance
+      </button>
+      <button
+        class="dropdown-item"
+        (click)="onApplyToAllInActivity()"
+        role="menuitem"
+        aria-label="Apply to all instances in this activity"
+        tabindex="0"
+      >
+        Apply to all instances in this activity
+      </button>
+      <button
+        class="dropdown-item disabled"
+        disabled
+        role="menuitem"
+        aria-label="Apply to all instances in other activities - not available"
+        aria-disabled="true"
+        tabindex="-1"
+      >
+        Apply to all instances in other activities
+      </button>
+    </div>
+
+    <button
+      class="next-button"
+      (click)="onNext()"
+      [disabled]="isNextDisabled()"
+      [attr.aria-disabled]="isNextDisabled()"
+      aria-label="Navigate to next instance of selected word"
+    >
+      Next
     </button>
+
     <button
       class="delete-button"
       (click)="onDelete()"
