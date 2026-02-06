@@ -181,7 +181,7 @@
   visibility: hidden;
   opacity: 0;
   position: absolute;
-  bottom: 12%;
+  bottom: 100%;
   left: 50%;
   transform: translateX(-50%);
   background-color: #333;
