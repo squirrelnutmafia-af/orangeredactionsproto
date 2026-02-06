@@ -119,6 +119,12 @@
   font-size: 14px;
 }
 
+.section-divider {
+  border: none;
+  border-top: 1px solid #e0e0e0;
+  margin: 20px 0;
+}
+
 .activity-meta {
   margin-top: 16px;
 }
