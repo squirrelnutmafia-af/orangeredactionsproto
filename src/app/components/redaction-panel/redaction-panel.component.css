@@ -292,7 +292,7 @@
   padding: 8px 4px;
   margin-top: 4px;
   font-size: 13px;
-  font-style: underline; 
+  text-decoration: underline; 
   color: #E53E3E;
   text-decoration: none;
   cursor: pointer;
