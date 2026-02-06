@@ -84,6 +84,11 @@
   min-width: 120px;
 }
 
+.detail-value {
+  font-size: 14px;
+  color: #333;
+}
+
 .priority-badge {
   padding: 4px 12px;
   border-radius: 4px;
