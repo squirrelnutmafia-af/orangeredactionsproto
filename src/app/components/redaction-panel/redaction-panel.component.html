@@ -50,44 +50,44 @@
           <path d="M3 4.5L6 7.5L9 4.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
       </button>
-    </div>
 
-    <div
-      *ngIf="showApplyDropdown"
-      class="apply-dropdown-menu"
-      role="menu"
-      aria-label="Apply scope menu"
-      (keydown)="onDropdownKeydown($event)"
-      tabindex="-1"
-    >
-      <button
-        class="dropdown-item"
-        (click)="onApplyToSelected()"
-        role="menuitem"
-        aria-label="Apply to selected instance"
-        tabindex="0"
-      >
-        Apply to Selected Text
-      </button>
-      <button
-        class="dropdown-item"
-        (click)="onApplyToAllInActivity()"
-        role="menuitem"
-        aria-label="Apply to all instances in this activity"
-        tabindex="0"
-      >
-        Apply to All Instances in This Activity
-      </button>
-      <button
-        class="dropdown-item disabled"
-        disabled
-        role="menuitem"
-        aria-label="Apply to all instances in other activities - not available"
-        aria-disabled="true"
+      <div
+        *ngIf="showApplyDropdown"
+        class="apply-dropdown-menu"
+        role="menu"
+        aria-label="Apply scope menu"
+        (keydown)="onDropdownKeydown($event)"
         tabindex="-1"
       >
-        Apply to All Instances in All Activities
-      </button>
+        <button
+          class="dropdown-item"
+          (click)="onApplyToSelected()"
+          role="menuitem"
+          aria-label="Apply to selected instance"
+          tabindex="0"
+        >
+          Apply to Selected Text
+        </button>
+        <button
+          class="dropdown-item"
+          (click)="onApplyToAllInActivity()"
+          role="menuitem"
+          aria-label="Apply to all instances in this activity"
+          tabindex="0"
+        >
+          Apply to All Instances in This Activity
+        </button>
+        <button
+          class="dropdown-item disabled"
+          disabled
+          role="menuitem"
+          aria-label="Apply to all instances in other activities - not available"
+          aria-disabled="true"
+          tabindex="-1"
+        >
+          Apply to All Instances in All Activities
+        </button>
+      </div>
     </div>
 
     <button
@@ -123,44 +123,44 @@
           <path d="M3 4.5L6 7.5L9 4.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
       </button>
-    </div>
 
-    <div
-      *ngIf="showDeleteDropdown"
-      class="delete-dropdown-menu"
-      role="menu"
-      aria-label="Delete scope menu"
-      (keydown)="onDeleteDropdownKeydown($event)"
-      tabindex="-1"
-    >
-      <button
-        class="dropdown-item"
-        (click)="onDeleteSelected()"
-        role="menuitem"
-        aria-label="Delete selected instance"
-        tabindex="0"
-      >
-        Delete
-      </button>
-      <button
-        class="dropdown-item"
-        (click)="onDeleteAllInActivity()"
-        role="menuitem"
-        aria-label="Delete all instances in this activity"
-        tabindex="0"
-      >
-        Delete All Instances In This Activity
-      </button>
-      <button
-        class="dropdown-item disabled"
-        disabled
-        role="menuitem"
-        aria-label="Delete all instances in all activities - not available"
-        aria-disabled="true"
+      <div
+        *ngIf="showDeleteDropdown"
+        class="delete-dropdown-menu"
+        role="menu"
+        aria-label="Delete scope menu"
+        (keydown)="onDeleteDropdownKeydown($event)"
         tabindex="-1"
       >
-        Delete All Instances in All Activities
-      </button>
+        <button
+          class="dropdown-item"
+          (click)="onDeleteSelected()"
+          role="menuitem"
+          aria-label="Delete selected instance"
+          tabindex="0"
+        >
+          Delete
+        </button>
+        <button
+          class="dropdown-item"
+          (click)="onDeleteAllInActivity()"
+          role="menuitem"
+          aria-label="Delete all instances in this activity"
+          tabindex="0"
+        >
+          Delete All Instances In This Activity
+        </button>
+        <button
+          class="dropdown-item disabled"
+          disabled
+          role="menuitem"
+          aria-label="Delete all instances in all activities - not available"
+          aria-disabled="true"
+          tabindex="-1"
+        >
+          Delete All Instances in All Activities
+        </button>
+      </div>
     </div>
 
     <a
