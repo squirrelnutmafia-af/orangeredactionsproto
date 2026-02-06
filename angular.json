@@ -26,7 +26,10 @@
             }
           },
           "options": {
-            "assets": [],
+            "assets": [
+              "src/_redirects",
+              "src/vercel.json"
+            ],
             "index": "src/index.html",
             "browser": "src/main.ts",
             "outputPath": "dist/demo",
