@@ -162,6 +162,20 @@
         Delete All Instances in All Activities
       </button>
     </div>
+
+    <a
+      class="remove-all-link"
+      [class.disabled]="!hasAnyRedactions"
+      (click)="onRemoveAllRedactions($event)"
+      (keydown)="onRemoveAllRedactionsKeyboard($event)"
+      [attr.tabindex]="hasAnyRedactions ? 0 : -1"
+      [attr.aria-disabled]="!hasAnyRedactions"
+      aria-label="Remove all redaction types from this activity"
+      role="button"
+    >
+      <i class="fa-solid fa-trash" aria-hidden="true"></i>
+      Remove all redaction types from this activity
+    </a>
   </div>
 
 

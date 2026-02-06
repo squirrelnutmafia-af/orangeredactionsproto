@@ -92,11 +92,13 @@
           [selectedRedactedRange]="selectedRedactedRange"
           [selectedText]="selectedText"
           [nextButtonEnabled]="nextButtonEnabled"
+          [hasAnyRedactions]="hasAnyRedactions"
           (applyRedactions)="onApplyRedactionsInternal($event)"
           (applyToAllInstances)="onApplyToAllInstances($event)"
           (deleteRedactions)="onDeleteRedactions()"
           (deleteAllInstancesInActivity)="onDeleteAllInstancesInActivity()"
           (navigateToNext)="onNavigateToNext()"
+          (removeAllRedactionsFromActivity)="onRemoveAllRedactionsFromActivity()"
         ></app-redaction-panel>
       </div>
     </div>

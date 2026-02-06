@@ -31,6 +31,7 @@ export class ActivityDescriptionComponent implements OnChanges {
   appliedRedactionTypes: RedactionType[] = [];
   nextButtonEnabled: boolean = false;
   redactionTypes: RedactionType[] = ['Private', 'Privileged', 'Highlight', 'Privacy-Foreign'];
+  hasAnyRedactions: boolean = false;
 
   constructor(private redactionService: RedactionService) {}
 
@@ -53,7 +54,13 @@ export class ActivityDescriptionComponent implements OnChanges {
         this.activity.description,
         this.activity.id
       );
+      this.updateHasAnyRedactions();
     }
+  }
+
+  private updateHasAnyRedactions(): void {
+    const existingRedactions = this.redactionService.getRedactions();
+    this.hasAnyRedactions = existingRedactions.some(r => r.activityId === this.activity.id);
   }
 
   onTextSelection(): void {
@@ -705,6 +712,28 @@ export class ActivityDescriptionComponent implements OnChanges {
     setTimeout(() => {
       document.body.removeChild(announcement);
     }, 1000);
+  }
+
+  onRemoveAllRedactionsFromActivity(): void {
+    const existingRedactions = this.redactionService.getRedactions();
+    const activityRedactions = existingRedactions.filter(r => r.activityId === this.activity.id);
+
+    if (activityRedactions.length === 0) {
+      return;
+    }
+
+    activityRedactions.forEach(redaction => {
+      this.redactionService.removeRedaction(
+        this.activity.id,
+        redaction.startPosition,
+        redaction.endPosition,
+        redaction.redactionType
+      );
+    });
+
+    this.selectedRedactedRange = null;
+    this.resetNextButton();
+    this.announceToScreenReader(`All redactions removed from this activity`);
   }
 
   resetNextButton(): void {

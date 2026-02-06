@@ -285,6 +285,42 @@
   overflow: hidden;
 }
 
+.remove-all-link {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 4px;
+  margin-top: 4px;
+  font-size: 13px;
+  color: #E53E3E;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  user-select: none;
+  border-radius: 4px;
+}
+
+.remove-all-link:hover:not(.disabled) {
+  color: #C53030;
+  background-color: rgba(229, 62, 62, 0.05);
+}
+
+.remove-all-link:focus-visible {
+  outline: 2px solid #4A90E2;
+  outline-offset: 2px;
+}
+
+.remove-all-link.disabled {
+  color: #CBD5E0;
+  cursor: not-allowed;
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.remove-all-link i {
+  font-size: 14px;
+}
+
 .help-text {
   padding: 12px;
   background-color: #F7FAFC;

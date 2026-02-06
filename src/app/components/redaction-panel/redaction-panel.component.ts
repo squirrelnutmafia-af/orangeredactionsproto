@@ -16,11 +16,13 @@ export class RedactionPanelComponent implements OnChanges {
   @Input() selectedRedactedRange: { start: number; end: number; types: RedactionType[] } | null = null;
   @Input() selectedText: string = '';
   @Input() nextButtonEnabled: boolean = false;
+  @Input() hasAnyRedactions: boolean = false;
   @Output() applyRedactions = new EventEmitter<RedactionType[]>();
   @Output() applyToAllInstances = new EventEmitter<RedactionType[]>();
   @Output() deleteRedactions = new EventEmitter<void>();
   @Output() deleteAllInstancesInActivity = new EventEmitter<void>();
   @Output() navigateToNext = new EventEmitter<void>();
+  @Output() removeAllRedactionsFromActivity = new EventEmitter<void>();
 
   selectedTypes: { [key: string]: boolean } = {};
   redactionTypes: RedactionTypeConfig[] = [];
@@ -240,6 +242,22 @@ export class RedactionPanelComponent implements OnChanges {
       'background-color': config.color,
       'border': `2px solid ${config.borderColor || config.color}`
     };
+  }
+
+  onRemoveAllRedactions(event: Event): void {
+    event.preventDefault();
+    if (!this.hasAnyRedactions) {
+      return;
+    }
+    this.removeAllRedactionsFromActivity.emit();
+    this.announceToScreenReader('All redactions removed from this activity');
+  }
+
+  onRemoveAllRedactionsKeyboard(event: KeyboardEvent): void {
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      this.onRemoveAllRedactions(event);
+    }
   }
 
   private announceToScreenReader(message: string): void {
