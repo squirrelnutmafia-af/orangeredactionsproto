@@ -168,7 +168,7 @@
 
 .dropdown-item.disabled,
 .dropdown-item:disabled {
-  color: #A0AEC0;
+  color: #4B5563;
   cursor: not-allowed;
   background-color: #F7FAFC;
 }
