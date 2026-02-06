@@ -27,6 +27,9 @@ export class ActivityDescriptionComponent implements OnChanges {
   selectedText: string = '';
   wordInstances: { start: number; end: number }[] = [];
   currentInstanceIndex: number = -1;
+  activeRedactionTerm: string = '';
+  appliedRedactionTypes: RedactionType[] = [];
+  nextButtonEnabled: boolean = false;
   redactionTypes: RedactionType[] = ['Private', 'Privileged', 'Highlight', 'Privacy-Foreign'];
 
   constructor(private redactionService: RedactionService) {}
@@ -34,6 +37,7 @@ export class ActivityDescriptionComponent implements OnChanges {
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['activity']) {
       this.updateSegments();
+      this.resetNextButton();
     }
   }
 
@@ -80,6 +84,11 @@ export class ActivityDescriptionComponent implements OnChanges {
     const endPosition = this.getAbsolutePosition(range.endContainer, range.endOffset);
 
     if (startPosition !== -1 && endPosition !== -1) {
+      const words = selectedText.trim().split(/\s+/);
+      if (words.length === 1 && words[0] !== this.activeRedactionTerm) {
+        this.resetNextButton();
+      }
+
       this.selectedText = selectedText;
       this.textSelected.emit({
         text: selectedText,
@@ -157,6 +166,15 @@ export class ActivityDescriptionComponent implements OnChanges {
   }
 
   onApplyRedactionsInternal(types: RedactionType[]): void {
+    if (this.selectedText && types.length > 0) {
+      const words = this.selectedText.trim().split(/\s+/);
+      if (words.length === 1) {
+        this.activeRedactionTerm = words[0];
+        this.appliedRedactionTypes = types;
+        this.nextButtonEnabled = true;
+        this.announceToScreenReader('Next instance available');
+      }
+    }
     this.applyRedactions.emit(types);
   }
 
@@ -190,6 +208,23 @@ export class ActivityDescriptionComponent implements OnChanges {
           ...this.selectedRedactedRange,
           types: remainingTypes
         };
+      }
+    }
+
+    if (this.activeRedactionTerm && this.appliedRedactionTypes.includes(redactionType)) {
+      const deletedText = this.activity.description.substring(startPosition, endPosition);
+      if (deletedText === this.activeRedactionTerm) {
+        const existingRedactions = this.redactionService.getRedactions();
+        const hasAnyRedactionsForTerm = existingRedactions.some(r => {
+          const redactedText = this.activity.description.substring(r.startPosition, r.endPosition);
+          return r.activityId === this.activity.id &&
+                 redactedText === this.activeRedactionTerm &&
+                 this.appliedRedactionTypes.includes(r.redactionType);
+        });
+
+        if (!hasAnyRedactionsForTerm) {
+          this.resetNextButton();
+        }
       }
     }
   }
@@ -464,14 +499,42 @@ export class ActivityDescriptionComponent implements OnChanges {
   }
 
   onNavigateToNext(): void {
-    if (this.wordInstances.length === 0) {
+    if (this.wordInstances.length === 0 || !this.nextButtonEnabled) {
       return;
     }
 
-    this.currentInstanceIndex = (this.currentInstanceIndex + 1) % this.wordInstances.length;
-    const nextInstance = this.wordInstances[this.currentInstanceIndex];
+    const startIndex = this.currentInstanceIndex;
+    let foundNextUnprocessed = false;
+    let attempts = 0;
 
-    this.selectTextRange(nextInstance.start, nextInstance.end);
+    while (attempts < this.wordInstances.length) {
+      this.currentInstanceIndex = (this.currentInstanceIndex + 1) % this.wordInstances.length;
+      const nextInstance = this.wordInstances[this.currentInstanceIndex];
+
+      const existingRedactions = this.redactionService.getRedactions();
+      const hasAllAppliedTypes = this.appliedRedactionTypes.every(type => {
+        return existingRedactions.some(
+          r => r.activityId === this.activity.id &&
+               r.redactionType === type &&
+               r.startPosition === nextInstance.start &&
+               r.endPosition === nextInstance.end
+        );
+      });
+
+      if (!hasAllAppliedTypes) {
+        this.selectTextRange(nextInstance.start, nextInstance.end);
+        foundNextUnprocessed = true;
+        break;
+      }
+
+      attempts++;
+    }
+
+    if (!foundNextUnprocessed) {
+      this.currentInstanceIndex = startIndex;
+      this.nextButtonEnabled = false;
+      this.announceToScreenReader('No more instances');
+    }
   }
 
   private selectTextRange(start: number, end: number): void {
@@ -544,6 +607,12 @@ export class ActivityDescriptionComponent implements OnChanges {
       return;
     }
 
+    const words = this.selectedText.trim().split(/\s+/);
+    if (words.length === 1) {
+      this.activeRedactionTerm = words[0];
+      this.appliedRedactionTypes = types;
+    }
+
     let appliedCount = 0;
 
     this.wordInstances.forEach(instance => {
@@ -575,6 +644,9 @@ export class ActivityDescriptionComponent implements OnChanges {
       const instanceCount = this.wordInstances.length;
       this.announceToScreenReader(`${instanceCount} instance${instanceCount !== 1 ? 's' : ''} redacted`);
     }
+
+    this.nextButtonEnabled = false;
+    this.announceToScreenReader('All instances processed');
   }
 
   private announceToScreenReader(message: string): void {
@@ -588,5 +660,11 @@ export class ActivityDescriptionComponent implements OnChanges {
     setTimeout(() => {
       document.body.removeChild(announcement);
     }, 1000);
+  }
+
+  resetNextButton(): void {
+    this.activeRedactionTerm = '';
+    this.appliedRedactionTypes = [];
+    this.nextButtonEnabled = false;
   }
 }

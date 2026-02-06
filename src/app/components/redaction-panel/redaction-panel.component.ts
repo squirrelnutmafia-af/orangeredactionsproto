@@ -15,6 +15,7 @@ export class RedactionPanelComponent {
   @Input() hasSelection: boolean = false;
   @Input() selectedRedactedRange: { start: number; end: number; types: RedactionType[] } | null = null;
   @Input() selectedText: string = '';
+  @Input() nextButtonEnabled: boolean = false;
   @Output() applyRedactions = new EventEmitter<RedactionType[]>();
   @Output() applyToAllInstances = new EventEmitter<RedactionType[]>();
   @Output() deleteRedactions = new EventEmitter<void>();
@@ -136,12 +137,7 @@ export class RedactionPanelComponent {
   }
 
   isNextDisabled(): boolean {
-    if (!this.selectedText || this.selectedText.trim().length === 0) {
-      return true;
-    }
-
-    const words = this.selectedText.trim().split(/\s+/);
-    return words.length !== 1;
+    return !this.nextButtonEnabled;
   }
 
   getCheckboxId(type: RedactionType): string {
