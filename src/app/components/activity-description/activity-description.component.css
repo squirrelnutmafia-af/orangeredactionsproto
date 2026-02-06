@@ -126,7 +126,14 @@
   font-size: 14px;
   font-weight: 600;
   color: #555;
+  margin: 0 0 6px 0;
+}
+
+.help-text {
+  font-size: 13px;
+  color: #777;
   margin: 0 0 12px 0;
+  font-style: italic;
 }
 
 .description-text {
