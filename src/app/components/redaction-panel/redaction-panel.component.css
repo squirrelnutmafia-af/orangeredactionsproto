@@ -292,9 +292,8 @@
   padding: 8px 4px;
   margin-top: 4px;
   font-size: 13px;
-  text-decoration: un
   color: #E53E3E;
-  text-decoration: none;
+  text-decoration: underline;
   cursor: pointer;
   transition: all 0.2s ease;
   user-select: none;
@@ -316,6 +315,7 @@
   cursor: not-allowed;
   opacity: 0.5;
   pointer-events: none;
+  text-decoration: none;
 }
 
 .remove-all-link i {
