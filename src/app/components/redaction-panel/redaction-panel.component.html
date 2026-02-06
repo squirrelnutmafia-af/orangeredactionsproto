@@ -27,7 +27,7 @@
   </div>
 
   <div class="action-buttons">
-    <div class="combo-button-group">
+    <div class="apply-combo-group">
       <button
         class="apply-button"
         (click)="onApply()"
@@ -42,7 +42,7 @@
         (click)="toggleApplyDropdown()"
         [disabled]="isApplyDisabled()"
         [attr.aria-disabled]="isApplyDisabled()"
-        [attr.aria-haspopup]="true"
+        aria-haspopup="menu"
         [attr.aria-expanded]="showApplyDropdown"
         aria-label="Apply scope options"
       >
@@ -76,7 +76,7 @@
         aria-label="Apply to all instances in this activity"
         tabindex="0"
       >
-        Apply to All Instances In aAtivity
+        Apply to All Instances in This Activity
       </button>
       <button
         class="dropdown-item disabled"
@@ -100,15 +100,68 @@
       Apply to Next Instance
     </button>
 
-    <button
-      class="delete-button"
-      (click)="onDelete()"
-      [disabled]="isDeleteDisabled()"
-      [attr.aria-disabled]="isDeleteDisabled()"
-      aria-label="Delete selected redaction"
+    <div class="delete-combo-group">
+      <button
+        class="delete-button"
+        (click)="onDelete()"
+        [disabled]="isDeleteDisabled()"
+        [attr.aria-disabled]="isDeleteDisabled()"
+        aria-label="Delete selected redaction"
+      >
+        Delete
+      </button>
+      <button
+        class="delete-dropdown-trigger"
+        (click)="toggleDeleteDropdown()"
+        [disabled]="isDeleteDisabled()"
+        [attr.aria-disabled]="isDeleteDisabled()"
+        aria-haspopup="menu"
+        [attr.aria-expanded]="showDeleteDropdown"
+        aria-label="Delete scope options"
+      >
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M3 4.5L6 7.5L9 4.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+    </div>
+
+    <div
+      *ngIf="showDeleteDropdown"
+      class="delete-dropdown-menu"
+      role="menu"
+      aria-label="Delete scope menu"
+      (keydown)="onDeleteDropdownKeydown($event)"
+      tabindex="-1"
     >
-      Delete
-    </button>
+      <button
+        class="dropdown-item"
+        (click)="onDeleteSelected()"
+        role="menuitem"
+        aria-label="Delete selected instance"
+        tabindex="0"
+      >
+        Delete
+      </button>
+      <button
+        class="dropdown-item"
+        (click)="onDeleteAllInActivity()"
+        role="menuitem"
+        aria-label="Delete all instances in this activity"
+        tabindex="0"
+      >
+        Delete All Instances in This Activity
+      </button>
+      <button
+        class="dropdown-item disabled"
+        disabled
+        role="menuitem"
+        aria-label="Delete all instances in all activities - not available"
+        aria-disabled="true"
+        tabindex="-1"
+      >
+        Delete All Instances in All Activities
+      </button>
+    </div>
   </div>
 
   <div class="help-text" *ngIf="!hasSelection">

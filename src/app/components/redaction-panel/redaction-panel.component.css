@@ -58,7 +58,8 @@
   position: relative;
 }
 
-.combo-button-group {
+.apply-combo-group,
+.delete-combo-group {
   display: flex;
   gap: 0;
   position: relative;
@@ -211,11 +212,12 @@
   background-color: #E53E3E;
   color: white;
   border: none;
-  border-radius: 6px;
+  border-radius: 6px 0 0 6px;
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s ease;
+  flex: 1;
 }
 
 .delete-button:hover:not(:disabled) {
@@ -238,6 +240,49 @@
 .delete-button:focus-visible {
   outline: 2px solid #4A90E2;
   outline-offset: 2px;
+}
+
+.delete-dropdown-trigger {
+  padding: 10px 8px;
+  background-color: #E53E3E;
+  color: white;
+  border: none;
+  border-left: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 0 6px 6px 0;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.delete-dropdown-trigger:hover:not(:disabled) {
+  background-color: #C53030;
+}
+
+.delete-dropdown-trigger:disabled {
+  background-color: #CBD5E0;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.delete-dropdown-trigger:focus-visible {
+  outline: 2px solid #4A90E2;
+  outline-offset: 2px;
+}
+
+.delete-dropdown-menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: white;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  margin-top: 4px;
+  z-index: 1000;
+  overflow: hidden;
 }
 
 .help-text {

@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter, HostListener } from '@angular/core';
+import { Component, Input, Output, EventEmitter, HostListener, OnChanges, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RedactionType, RedactionTypeConfig } from '../../models/redaction.model';
@@ -11,7 +11,7 @@ import { RedactionService } from '../../services/redaction.service';
   templateUrl: './redaction-panel.component.html',
   styleUrls: ['./redaction-panel.component.css']
 })
-export class RedactionPanelComponent {
+export class RedactionPanelComponent implements OnChanges {
   @Input() hasSelection: boolean = false;
   @Input() selectedRedactedRange: { start: number; end: number; types: RedactionType[] } | null = null;
   @Input() selectedText: string = '';
@@ -19,23 +19,60 @@ export class RedactionPanelComponent {
   @Output() applyRedactions = new EventEmitter<RedactionType[]>();
   @Output() applyToAllInstances = new EventEmitter<RedactionType[]>();
   @Output() deleteRedactions = new EventEmitter<void>();
+  @Output() deleteAllInstancesInActivity = new EventEmitter<void>();
   @Output() navigateToNext = new EventEmitter<void>();
 
   selectedTypes: { [key: string]: boolean } = {};
   redactionTypes: RedactionTypeConfig[] = [];
   showApplyDropdown: boolean = false;
+  showDeleteDropdown: boolean = false;
+
+  private previousApplyDisabled: boolean = true;
+  private previousDeleteDisabled: boolean = true;
+  private previousNextDisabled: boolean = true;
 
   constructor(private redactionService: RedactionService) {
     this.redactionTypes = this.redactionService.redactionTypes;
   }
 
+  ngOnChanges(changes: SimpleChanges): void {
+    const currentApplyDisabled = this.isApplyDisabled();
+    const currentDeleteDisabled = this.isDeleteDisabled();
+    const currentNextDisabled = this.isNextDisabled();
+
+    if (changes['hasSelection'] || changes['selectedRedactedRange'] || changes['nextButtonEnabled']) {
+      if (this.previousApplyDisabled !== currentApplyDisabled) {
+        if (!currentApplyDisabled) {
+          this.announceToScreenReader('Apply button available');
+        }
+        this.previousApplyDisabled = currentApplyDisabled;
+      }
+
+      if (this.previousDeleteDisabled !== currentDeleteDisabled) {
+        if (!currentDeleteDisabled) {
+          this.announceToScreenReader('Delete button available');
+        }
+        this.previousDeleteDisabled = currentDeleteDisabled;
+      }
+
+      if (this.previousNextDisabled !== currentNextDisabled) {
+        this.previousNextDisabled = currentNextDisabled;
+      }
+    }
+  }
+
   @HostListener('document:click', ['$event'])
   onDocumentClick(event: MouseEvent): void {
     const target = event.target as HTMLElement;
-    const clickedInside = target.closest('.combo-button-group') || target.closest('.apply-dropdown-menu');
+    const clickedInApply = target.closest('.apply-combo-group') || target.closest('.apply-dropdown-menu');
+    const clickedInDelete = target.closest('.delete-combo-group') || target.closest('.delete-dropdown-menu');
 
-    if (!clickedInside && this.showApplyDropdown) {
+    if (!clickedInApply && this.showApplyDropdown) {
       this.showApplyDropdown = false;
+    }
+
+    if (!clickedInDelete && this.showDeleteDropdown) {
+      this.showDeleteDropdown = false;
     }
   }
 
@@ -69,6 +106,60 @@ export class RedactionPanelComponent {
     return !this.selectedRedactedRange ||
            !this.selectedRedactedRange.types ||
            this.selectedRedactedRange.types.length === 0;
+  }
+
+  toggleDeleteDropdown(): void {
+    if (!this.isDeleteDisabled()) {
+      this.showDeleteDropdown = !this.showDeleteDropdown;
+
+      if (this.showDeleteDropdown) {
+        setTimeout(() => {
+          const firstItem = document.querySelector('.delete-dropdown-menu .dropdown-item:not(:disabled)') as HTMLElement;
+          if (firstItem) {
+            firstItem.focus();
+          }
+        }, 0);
+      }
+    }
+  }
+
+  onDeleteSelected(): void {
+    this.showDeleteDropdown = false;
+    this.onDelete();
+  }
+
+  onDeleteAllInActivity(): void {
+    this.showDeleteDropdown = false;
+    if (!this.isDeleteDisabled()) {
+      this.deleteAllInstancesInActivity.emit();
+    }
+  }
+
+  onDeleteDropdownKeydown(event: KeyboardEvent): void {
+    if (event.key === 'Escape') {
+      event.preventDefault();
+      this.showDeleteDropdown = false;
+      const trigger = document.querySelector('.delete-dropdown-trigger') as HTMLElement;
+      if (trigger) {
+        trigger.focus();
+      }
+      return;
+    }
+
+    if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
+      event.preventDefault();
+      const items = Array.from(document.querySelectorAll('.delete-dropdown-menu .dropdown-item:not(:disabled)')) as HTMLElement[];
+      const currentIndex = items.findIndex(item => item === document.activeElement);
+
+      let nextIndex: number;
+      if (event.key === 'ArrowDown') {
+        nextIndex = currentIndex < items.length - 1 ? currentIndex + 1 : 0;
+      } else {
+        nextIndex = currentIndex > 0 ? currentIndex - 1 : items.length - 1;
+      }
+
+      items[nextIndex]?.focus();
+    }
   }
 
   toggleApplyDropdown(): void {
@@ -149,5 +240,18 @@ export class RedactionPanelComponent {
       'background-color': config.color,
       'border': `2px solid ${config.borderColor || config.color}`
     };
+  }
+
+  private announceToScreenReader(message: string): void {
+    const announcement = document.createElement('div');
+    announcement.setAttribute('role', 'status');
+    announcement.setAttribute('aria-live', 'polite');
+    announcement.className = 'sr-only';
+    announcement.textContent = message;
+    document.body.appendChild(announcement);
+
+    setTimeout(() => {
+      document.body.removeChild(announcement);
+    }, 1000);
   }
 }

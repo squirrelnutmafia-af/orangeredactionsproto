@@ -457,6 +457,51 @@ export class ActivityDescriptionComponent implements OnChanges {
     this.selectedRedactedRange = null;
   }
 
+  onDeleteAllInstancesInActivity(): void {
+    if (!this.selectedRedactedRange || this.selectedRedactedRange.types.length === 0) {
+      return;
+    }
+
+    const { start, end, types } = this.selectedRedactedRange;
+    const selectedWord = this.activity.description.substring(start, end);
+
+    if (this.wordInstances.length === 0) {
+      this.findAllInstancesOfWord(selectedWord, start);
+    }
+
+    let deletedCount = 0;
+
+    this.wordInstances.forEach(instance => {
+      types.forEach(redactionType => {
+        const existingRedactions = this.redactionService.getRedactions();
+        const hasRedaction = existingRedactions.some(
+          r => r.activityId === this.activity.id &&
+               r.redactionType === redactionType &&
+               r.startPosition === instance.start &&
+               r.endPosition === instance.end
+        );
+
+        if (hasRedaction) {
+          this.redactionService.removeRedaction(
+            this.activity.id,
+            instance.start,
+            instance.end,
+            redactionType
+          );
+          deletedCount++;
+        }
+      });
+    });
+
+    if (deletedCount > 0) {
+      const instanceCount = this.wordInstances.length;
+      this.announceToScreenReader(`${instanceCount} instance${instanceCount !== 1 ? 's' : ''} deleted`);
+    }
+
+    this.selectedRedactedRange = null;
+    this.resetNextButton();
+  }
+
   findAllInstancesOfWord(word: string, currentStartPosition: number): void {
     const words = word.trim().split(/\s+/);
     if (words.length !== 1) {
