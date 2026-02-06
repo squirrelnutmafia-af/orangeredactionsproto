@@ -242,7 +242,7 @@
   color: #EA4242;
   font-size: 18px;
   font-weight: bold;
-  cursor: pointer;
+  cursor: auto;
   padding: 0 4px;
   line-height: 1;
   transition: all 0.15s ease;
