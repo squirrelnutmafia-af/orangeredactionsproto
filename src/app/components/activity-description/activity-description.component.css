@@ -17,7 +17,7 @@
   cursor: pointer;
   user-select: none;
   padding: 12px;
-  margin: -12px -12px 0 -12px;
+  margin: -12px -12px -12px -12px;
   border-radius: 4px;
   transition: background-color 0.2s ease;
 }
