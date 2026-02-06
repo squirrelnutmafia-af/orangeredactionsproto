@@ -161,7 +161,7 @@
 .redacted-text {
   position: relative;
   padding: 2px 0;
-  cursor: help;
+  cursor: auto;
   transition: all 0.2s ease;
 }
 
