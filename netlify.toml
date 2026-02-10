@@ -1,6 +1,6 @@
 [build]
-publish = "dist"
-command = "npm run build"
+publish = "dist/orange-redact-prototype/browser"
+command = "npm run build -- --configuration production"
 
 [[redirects]]
 from = "/*"
