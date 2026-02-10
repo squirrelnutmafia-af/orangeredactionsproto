@@ -1,5 +1,5 @@
 [build]
-publish = "dist"
+publish = "dist/orange-redact-prototype"
 command = "npm run build"
 
 [[redirects]]
